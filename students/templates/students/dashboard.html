@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
+    <p class="mt-1 text-sm text-gray-500">Overview of student enrollment and distribution.</p>
+</div>
+
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 gap-5 sm:grid-cols-3 mb-8">
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <dt class="text-sm font-medium text-gray-500 truncate">Total Students</dt>
+            <dd class="mt-1 text-3xl font-semibold text-gray-900">{{ total_students }}</dd>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Section -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Course Distribution -->
+    <div class="bg-white shadow rounded-lg p-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Students per Course</h3>
+        <div class="relative h-64 w-full">
+            <canvas id="courseChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Enrollment History -->
+    <div class="bg-white shadow rounded-lg p-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Enrollment Trends</h3>
+        <div class="relative h-64 w-full">
+            <canvas id="enrollmentChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Chart JS Initialization -->
+<script>
+    // Course Chart (Pie)
+    const ctxCourse = document.getElementById('courseChart').getContext('2d');
+    new Chart(ctxCourse, {
+        type: 'doughnut',
+        data: {
+            labels: {{ course_labels|safe }},
+            datasets: [{
+                data: {{ course_counts|safe }},
+                backgroundColor: ['#4F46E5', '#10B981', '#F59E0B', '#EF4444'],
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+    });
+
+    // Enrollment Chart (Line)
+    const ctxEnroll = document.getElementById('enrollmentChart').getContext('2d');
+    new Chart(ctxEnroll, {
+        type: 'line',
+        data: {
+            labels: {{ enrollment_labels|safe }},
+            datasets: [{
+                label: 'New Enrollments',
+                data: {{ enrollment_counts|safe }},
+                borderColor: '#4F46E5',
+                tension: 0.1
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+    });
+</script>
+{% endblock %}
